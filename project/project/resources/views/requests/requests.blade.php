@@ -173,10 +173,10 @@
                             <td><img src="https://i1.sndcdn.com/avatars-000198033687-20g02p-t500x500.jpg"
                                      height="20px"
                                      width="20px" alt=""></td>
-                            <td>{{\App\User::departamentToString(\App\RequestModel::departamentoUser($request->owner_id))}}</td>
-                            <td>{{\App\RequestModel::userName($request->owner_id)}}</td>
-                            <td>{{$request->open_date}}</td>
-                            <td>{{\App\RequestModel::statusToString($request->status)}}</td>
+                            <td>{{$request->dep}}</td>
+                            <td>{{$request->name}}</td>
+                            <td>{{$request->data}}</td>
+                            <td>{{\App\RequestModel::statusToString($request->state)}}</td>
                             <td>{{$request->id}}</td>
                             <td><a href="{{route('requests.details', $request->id)}}">Open</a></td>
                         </tr>

@@ -35,28 +35,27 @@ class RequestsController extends Controller
         }
         return redirect()->back();
     }
-/*
+
     public function requests()
     {
-        $data = DB::table('requests')
+        $requests = DB::table('requests')
             ->join('users', 'requests.owner_id', '=', 'users.id')
             ->join('departaments', 'users.department_id', '=', 'departaments.id')
             ->select('requests.id as id', 'departaments.name as dep', 'users.name as name', 'requests.open_date as data', 'requests.status as state')
             ->whereNull('requests.refused_reason')
-            ->get();
+            ->paginate(10);
 
-        return view('requests.requests', compact('data'));
+        return view('requests.requests', compact('requests'));
     }
-*/
 
+/*
     public function requests()
     {
         $requests = RequestModel::orderBy('id')->paginate(10);
 
-
-
         return view('requests.requests', compact('requests'));
     }
+*/
 
     public function requestsFilter()
     {
