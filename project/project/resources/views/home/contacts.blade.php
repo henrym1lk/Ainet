@@ -60,16 +60,16 @@
 
                 <div style="
     width: 90%;
-    border: 2px solid crimson;
-    border-radius: 5px;
     margin-left: 40px;
     margin-bottom: 15px;
     padding: 5px;
     display: block;
     height: 400px;
-    overflow: scroll;">
+    float: right;
+    overflow: auto;
+    ">
 
-                    <p style="font-size: 30px">Phone Contacts</p>
+
 
                     <table class="table table-striped">
                         <thead>
@@ -82,7 +82,9 @@
                         <tbody>
                         @foreach ($users as $user)
                             <tr>
-                                <td><a href="{{route('user.profile', $user->profile_url, $user->id)}}">{{$user->name}}</a></td>
+                                <td>
+                                    <a href="{{route('user.profile', $user->profile_url, $user->id)}}">{{$user->name}}</a>
+                                </td>
                                 <td>{{$user->phone}}</td>
                                 <td>{{$user->email}}</td>
                             </tr>

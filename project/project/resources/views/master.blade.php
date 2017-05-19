@@ -44,7 +44,7 @@
     <div>
 
         <img style="position: relative;
-            width: 100%;" src="http://project.ainet/images/top.jpg">
+            width: 100%;" src="/images/top.jpg">
 
         <p style="position: absolute;
             top: 200px;

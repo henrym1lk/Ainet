@@ -39,12 +39,13 @@ Route::post('/requests/{request_id}/refuse', 'AdminController@refuseRequest')->n
 Route::get('/requests/{request_id}/delete', 'RequestsController@deleteRequest')->name('requests.delete');
 
 //admin
-Route::get('/admin/manage', 'AdminController@manage')->name('admin.manage');
+Route::get('/admin/users', 'AdminController@showUsers')->name('admin.users');
 Route::get('/admin/user/{id}/unblock', 'AdminController@unblockUser')->name('user.unblock');
 Route::get('/admin/user/{id}/block', 'AdminController@blockUser')->name('user.block');
 Route::get('/admin/user/{id}/concede', 'AdminController@concede')->name('user.concede');
 Route::get('/admin/user/{id}/revoke', 'AdminController@revoke')->name('user.revoke');
 Route::get('/admin/comment/{id}/unblock', 'AdminController@unblockComment')->name('comment.unblock');
+Route::get('/admin/users/filter', 'AdminController@usersFilter')->name('admin.users.filter');
 
 //login
 Route::post('/user/login', 'Auth\LoginController@login')->name('login');

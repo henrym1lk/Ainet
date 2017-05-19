@@ -18,6 +18,42 @@ class AdminController extends Controller
         }
     }
 
+    public function showUsers()
+    {
+        $blockedUsers = DB::table('users')
+            ->join('departaments', 'users.department_id', '=', 'departaments.id')
+            ->select('users.id as id', 'departaments.name as dep', 'users.name as name')
+            ->where('users.blocked', 1)
+            ->get();
+
+        $adminOrNotUsers = DB::table('users')
+            ->join('departaments', 'users.department_id', '=', 'departaments.id')
+            ->select('users.id as id', 'departaments.name as dep', 'users.name as name', 'users.admin as admin', 'users.blocked as blocked' )
+            ->get();
+
+        return view('admin.users', compact('blockedUsers', 'adminOrNotUsers'));
+    }
+    public function usersFilter(){
+        if (is_null(Input::get('column')) || is_null(Input::get('order'))) {
+            $users = DB::table('users')
+                ->join('departaments', 'users.department_id', '=', 'departaments.id')
+                ->select('users.id as id', 'users.name as name', 'phone', 'email', 'profile_url')
+                ->where('users.name', 'like', is_null(Input::get('name')) ? '%' : '%' . Input::get('name') . '%')
+                ->where('departaments.name', 'like', is_null(Input::get('department')) ? '%' : '%' . Input::get('department') . '%')
+                ->get();
+        }
+        else{
+            $users = DB::table('users')
+                ->join('departaments', 'users.department_id', '=', 'departaments.id')
+                ->select('users.id as id', 'users.name as name', 'phone', 'email', 'profile_url')
+                ->where('users.name', 'like', is_null(Input::get('name')) ? '%' : '%' . Input::get('name') . '%')
+                ->where('departaments.name', 'like', is_null(Input::get('department')) ? '%' : '%' . Input::get('department') . '%')
+                ->orderBy(Input::get('column'), Input::get('order'))
+                ->get();
+        }
+        return view('admin.users', compact('users'));
+    }
+
     public function printRequest(Request $request, $id){
         DB::table('requests')
             ->where('id', $id)

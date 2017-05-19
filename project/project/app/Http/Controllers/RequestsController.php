@@ -35,33 +35,33 @@ class RequestsController extends Controller
         }
         return redirect()->back();
     }
-/*
+
     public function requests()
     {
-        $data = DB::table('requests')
+        $requests = DB::table('requests')
             ->join('users', 'requests.owner_id', '=', 'users.id')
             ->join('departaments', 'users.department_id', '=', 'departaments.id')
             ->select('requests.id as id', 'departaments.name as dep', 'users.name as name', 'requests.open_date as data', 'requests.status as state')
             ->whereNull('requests.refused_reason')
-            ->get();
-
-        return view('requests.requests', compact('data'));
-    }
-*/
-
-    public function requests()
-    {
-        $requests = RequestModel::orderBy('id')->paginate(10);
-
-
+            ->orderBy('requests.id')
+            ->paginate(10);
 
         return view('requests.requests', compact('requests'));
     }
 
+/*
+    public function requests()
+    {
+        $requests = RequestModel::orderBy('id')->paginate(10);
+
+        return view('requests.requests', compact('requests'));
+    }
+*/
+
     public function requestsFilter()
     {
         if (is_null(Input::get('column')) || is_null(Input::get('order'))) {
-            $data = DB::table('requests')
+            $requests = DB::table('requests')
                 ->join('users', 'requests.owner_id', '=', 'users.id')
                 ->join('departaments', 'users.department_id', '=', 'departaments.id')
                 ->select('requests.id as id', 'departaments.name as dep', 'users.name as name', 'requests.open_date as data', 'requests.status as state')
@@ -70,9 +70,9 @@ class RequestsController extends Controller
                 ->where('requests.open_date', 'like', is_null(Input::get('date')) ? '%' : '%' . Input::get('date') . '%')
                 ->where('departaments.name', 'like', is_null(Input::get('department')) ? '%' : '%' . Input::get('department') . '%')
                 ->whereNull('requests.refused_reason')
-                ->get();
+                ->paginate(10);
         } else {
-            $data = DB::table('requests')
+            $requests = DB::table('requests')
                 ->join('users', 'requests.owner_id', '=', 'users.id')
                 ->join('departaments', 'users.department_id', '=', 'departaments.id')
                 ->select('requests.id as id', 'departaments.name as dep', 'users.name as name', 'requests.open_date as data', 'requests.status as state')
@@ -82,12 +82,10 @@ class RequestsController extends Controller
                 ->where('departaments.name', 'like', is_null(Input::get('department')) ? '%' : '%' . Input::get('department') . '%')
                 ->whereNull('requests.refused_reason')
                 ->orderBy(Input::get('column'), Input::get('order'))
-                ->get();
+                ->paginate(10);
         }
 
-        $numberOfPages = ceil(count($data) / 10);
-
-        return view('requests.requests', compact('data', 'numberOfPages'));
+        return view('requests.requests', compact('requests'));
     }
 
     public function requestsDetails($id)
