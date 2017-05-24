@@ -104,6 +104,7 @@
                 <p>Paper Size: {{$data->paper_size}}</p>
                 <p>Paper Type: {{$data->paper_type}}</p>
                 <p>Status: {{\App\RequestModel::statusToString($data->status)}}</p>
+                <p>File: <a href="http://project.ainet/requests/{{$request_id}}">download link</a></p>
 
             </div>
 
@@ -121,7 +122,8 @@
 
             @if($data->status == 0 && \Illuminate\Support\Facades\Auth::user()->id == $data->owner_id)
 
-                <a class="btn btn-danger" href="{{route('requests.delete', $request_id)}}" name="request_id">Delete</a>
+                <a class="btn btn-danger" href="{{route('requests.delete', $request_id)}}" name="request_delete">Delete</a>
+                <a class="btn btn-warning" href="{{route('requests.edit', $request_id)}}" name="request_edit">Edit</a>
 
             @endif
 

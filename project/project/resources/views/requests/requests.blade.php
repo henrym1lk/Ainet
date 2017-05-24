@@ -170,9 +170,13 @@
                     --}}
                     @foreach($requests as $request)
                         <tr>
-                            <td><img src="https://i1.sndcdn.com/avatars-000198033687-20g02p-t500x500.jpg"
-                                     height="20px"
-                                     width="20px" alt=""></td>
+                            @if(\App\RequestModel::isImage($request->file))
+                                <td><img src="{{base_path() . 'storage/files/' . $request->file}}"
+                                         height="20px"
+                                         width="20px" alt=""></td>
+                            @else
+                                <td></td>
+                            @endif
                             <td>{{$request->dep}}</td>
                             <td>{{$request->name}}</td>
                             <td>{{$request->data}}</td>

@@ -34,7 +34,7 @@
     padding: 5px;
     display: block;
     height: 600px">
-        <form style="height: 100%; width: 100%" action="{{route('requests.submit')}}" method="post">
+        <form style="height: 100%; width: 100%" action="{{route('requests.submit')}}" method="post" enctype="multipart/form-data">
             {{ csrf_field() }}
             <div style="height: 100%; width: 50%; float: right">
                 <b>Descrição (opcional)</b>
@@ -79,7 +79,7 @@
                     </select>
                 </div>
                 <div style="margin-bottom: 10%;margin-right: 5%">
-                    <input type="file" name="file" class="btn btn-secondary btn-file" value="{{old('file')}}">
+                    <input required type="file" name="file" class="btn btn-secondary btn-file" value="{{old('file')}}">
                 </div>
             </div>
         </form>

@@ -57,6 +57,7 @@
                     </tr>
                 @endforeach
             </table>
+            {{$blockedUsers->links()}}
         </div>
 
         <div class="tables">
@@ -82,6 +83,7 @@
                     </tr>
                 @endforeach
             </table>
+            {{$adminOrNotUsers->links()}}
         </div>
 
         <div class="tables">
@@ -103,6 +105,7 @@
                     </tr>
                 @endforeach
             </table>
+            {{$comments->links()}}
         </div>
 
     </div>

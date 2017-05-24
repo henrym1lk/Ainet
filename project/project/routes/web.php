@@ -27,8 +27,8 @@ Route::get('/user/profile/{profile_url}', 'ProfileController@profileDescription'
 //requests
 Route::get('/requests', 'RequestsController@requests')->name('requests');
 Route::get('/requests/filter', 'RequestsController@requestsFilter')->name('requests.filter');
-Route::get('/requests/details/{detail_id}', 'RequestsController@requestsDetails')->name('requests.details');
-Route::post('/requests/details/{detail_id}/comment', 'RequestsController@requestsComment')->name('requests.comment');
+Route::get('/requests/{detail_id}/details', 'RequestsController@requestsDetails')->name('requests.details');
+Route::post('/requests/{detail_id}/comment', 'RequestsController@requestsComment')->name('requests.comment');
 Route::get('/comment/report', 'RequestsController@commentReport')->name('comment.report');
 Route::get('/comment/block', 'RequestsController@commentBlock')->name('comment.block');
 Route::get('/requests/make', 'RequestsController@create')->name('requests.make');
@@ -37,6 +37,9 @@ Route::post('/requests/{request_id}/rate', 'RequestsController@rate')->name('req
 Route::post('/requests/{request_id}/print', 'AdminController@printRequest')->name('requests.print');
 Route::post('/requests/{request_id}/refuse', 'AdminController@refuseRequest')->name('requests.refuse');
 Route::get('/requests/{request_id}/delete', 'RequestsController@deleteRequest')->name('requests.delete');
+Route::get('/requests/{request_id}/file', 'RequestsController@requestFile')->name('requests.file');
+Route::get('/requests/{request_id}/edit', 'RequestsController@editRequest')->name('requests.edit');
+Route::post('/requests/{request_id}/save', 'RequestsController@save')->name('requests.save');
 
 //admin
 Route::get('/admin/manage', 'AdminController@manage')->name('admin.manage');

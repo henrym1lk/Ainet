@@ -79,17 +79,17 @@ class AdminController extends Controller
             ->join('departaments', 'users.department_id', '=', 'departaments.id')
             ->select('users.id as id', 'departaments.name as dep', 'users.name as name')
             ->where('users.blocked', 1)
-            ->get();
+            ->paginate(5);
 
         $adminOrNotUsers = DB::table('users')
             ->join('departaments', 'users.department_id', '=', 'departaments.id')
             ->select('users.id as id', 'departaments.name as dep', 'users.name as name', 'users.admin as admin')
-            ->get();
+            ->paginate(5);
 
         $comments = DB::table('comments')
             ->select('id', 'comment')
             ->where('blocked', 1)
-            ->get();
+            ->paginate(5);
 
         return view('admin.manage', compact('blockedUsers', 'adminOrNotUsers', 'comments'));
     }

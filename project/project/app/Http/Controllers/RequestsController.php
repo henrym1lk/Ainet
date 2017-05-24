@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\CommentModel;
+use Faker\Provider\File;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\User;
 use App\RequestModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Response;
 use League\Flysystem\Exception;
 
 class RequestsController extends Controller
@@ -26,7 +28,7 @@ class RequestsController extends Controller
     public function deleteRequest($id)
     {
         $requestModel = RequestModel::where('id', $id)->first();
-        if(is_null($requestModel)){
+        if (is_null($requestModel)) {
             return redirect()->route('requests');
         }
         if ($requestModel->owner_id == Auth::user()->id) {
@@ -36,27 +38,24 @@ class RequestsController extends Controller
         return redirect()->back();
     }
 
+    public function editRequest($id)
+    {
+        $request = RequestModel::find($id);
+        return view('requests.edit', compact('request'));
+    }
+
     public function requests()
     {
         $requests = DB::table('requests')
             ->join('users', 'requests.owner_id', '=', 'users.id')
             ->join('departaments', 'users.department_id', '=', 'departaments.id')
-            ->select('requests.id as id', 'departaments.name as dep', 'users.name as name', 'requests.open_date as data', 'requests.status as state')
+            ->select('requests.file as file', 'requests.id as id', 'departaments.name as dep', 'users.name as name', 'requests.open_date as data', 'requests.status as state')
             ->whereNull('requests.refused_reason')
             ->orderBy('requests.id')
             ->paginate(10);
 
         return view('requests.requests', compact('requests'));
     }
-
-/*
-    public function requests()
-    {
-        $requests = RequestModel::orderBy('id')->paginate(10);
-
-        return view('requests.requests', compact('requests'));
-    }
-*/
 
     public function requestsFilter()
     {
@@ -94,7 +93,7 @@ class RequestsController extends Controller
             ->where('id', '=', $id)
             ->first();
 
-        if(is_null($data)){
+        if (is_null($data)) {
             return redirect()->back();
         }
 
@@ -168,19 +167,80 @@ class RequestsController extends Controller
         $this->validate($data, [
             'due_date' => 'nullable|date',
             'quantity' => 'required',
-            'file' => 'nullable|file'
+            'file' => 'required|file'
         ]);
+
         $request = new RequestModel();
         $request->fill($data->all());
-        $request['file'] = "sim";
         $request['status'] = 0;
         $request['owner_id'] = Auth::user()['id'];
         $request['open_date'] = date('Y-m-d H:i:s');
+
+        $file = $data->file('file');
+
+        $fileName = "file" . $request->id . "." . $file->getClientOriginalExtension();
+
+        $data->file('file')->move(
+            base_path() . 'storage/files/', $fileName
+        );
+
+        $request['file'] = $fileName;
         $request->save();
 
         DB::table('users')
             ->where('id', Auth::user()['id'])
             ->increment('print_counts');
+
+        return redirect()->route('requests');
+    }
+
+    public function save(Request $data, $request_id)
+    {
+        $this->validate($data, [
+            'due_date' => 'nullable|date',
+            'quantity' => 'required',
+            'file' => 'required|file'
+        ]);
+
+        $request = RequestModel::find($request_id);
+
+        $oldFile = $request->file;
+
+        $request->fill($data->all());
+
+        $request->status = 0;
+        $request->owner_id = Auth::user()['id'];
+        $request->open_date = date('Y-m-d H:i:s');
+
+        $file = $data->file('file');
+
+        $fileName = "file" . $request->id . "." . $file->getClientOriginalExtension();
+
+        unlink(base_path() . 'storage/files/' . $oldFile);
+
+        $data->file('file')->move(
+            base_path() . 'storage/files/', $fileName
+        );
+
+        $request->file = $fileName;
+        $request->save();
+
+        return redirect()->route('requests');
+    }
+
+    public function requestFile($requestId)
+    {
+        $request = RequestModel::find($requestId);
+
+        if (is_null($request)) {
+            return redirect()->route('requests');
+        }
+
+        if (Auth::user()->id == $request->owner_id || Auth::user()->admin == 1) {
+            $path = base_path() . 'storage/files/' . $request->file;
+
+            Response::download($path, $request->file);
+        }
 
         return redirect()->route('requests');
     }

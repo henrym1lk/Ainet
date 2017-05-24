@@ -115,7 +115,7 @@ class RegisterController extends Controller
 
         $user['confirmation'] = $confirmation['confirmation'];
 
-        Mail::to($user)->send(new Confirmation);
+        Mail::to($user)->send(new Confirmation($user['confirmation']));
 
         $user->save();
 

@@ -11,14 +11,16 @@ class Confirmation extends Mailable
 {
     use Queueable, SerializesModels;
 
+    private $confirmation;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($confirmation)
     {
-        //
+        $this->confirmation = $confirmation;
     }
 
     /**
@@ -28,6 +30,6 @@ class Confirmation extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.confirmation');
+        return $this->view('mail.confirmation', ['confirmation' => $this->confirmation]);
     }
 }

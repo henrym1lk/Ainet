@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class RequestModel extends Model
 {
@@ -12,6 +13,21 @@ class RequestModel extends Model
         'owner_id', 'status', 'open_date', 'due_date', 'description', 'quantity', 'colored', 'stapled', 'paper_size', 'paper_type',
         'file', 'printer_id', 'closed_date', 'closed_user_id', 'refused_reason', 'satisfaction_grade', 'front_back'
     ];
+
+    public static function isImage($file)
+    {
+        $parts = explode('.', $file);
+
+        if(strcmp($parts[1], 'png') || strcmp($parts[1], 'jpg')){
+            return true;
+        }
+        return false;
+    }
+
+    public static function find($id)
+    {
+        return RequestModel::where('id', $id)->first();
+    }
 
     public static function userName($owner_id)
     {
