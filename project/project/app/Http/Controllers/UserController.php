@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use App\User;
 use Illuminate\Validation\Rule;
+use Intervention\Image\Facades\Image;
 
 class UserController extends Controller
 {
@@ -26,29 +24,32 @@ class UserController extends Controller
     protected function save(Request $data)
     {
 
-        $validator = Validator::make($data, [
-            'name' => 'regex:/^[a-zA-Z ]+$/',
+        $this->validate($data, [
+            'name' => 'required|regex:/^[a-zA-Z ]+$/',
+            'email' => ['required', 'email', Rule::unique('users')->ignore(Auth::user()->id)],
             'phone' => 'nullable|digits:9',
-            'profile_url' => [
-                'nullable',
-                Rule::unique('users')->ignore(Auth::user()->id)
-            ],
-            'email' => [
-                'required',
-                Rule::unique('users')->ignore(Auth::user()->id)
-            ],
+            'profile_url' => ['required', Rule::unique('users')->ignore(Auth::user()->id)],
+            'photo' => 'nullable|image|mimes:jpg,png,jpeg',
+            'facebook' => 'nullable',
+            'presentation' => 'nullable',
         ]);
-
-        $validator->validate();
 
         $user = Auth::user();
 
-        $user->name = $data['name'];
-        $user->email = $data['email'];
-        $user->phone = $data['phone'];
+        $user->fill(($data->all()));
 
-        if (!is_null($data['profile_url'])) {
-            $user->profile_url = $data['profile_url'];
+        if ($data->hasFile('photo')) {
+            $file = $data->file('photo');
+
+            $fileName = $user['profile_url'].".".$file->getClientOriginalExtension();
+
+            $path = public_path('profile_pictures/'.$fileName);
+            Image::make($file->getRealPath())->resize(288, 288)->save($path);
+
+            $user['profile_photo'] = "http://project.ainet/profile_pictures/".$fileName;
+        }
+        else{
+            $user['profile_photo'] = Auth::user()->profile_photo;
         }
 
         $user->save();
@@ -70,6 +71,8 @@ class UserController extends Controller
 
     public function edit()
     {
+
+
         return view('user.edit');
     }
 }

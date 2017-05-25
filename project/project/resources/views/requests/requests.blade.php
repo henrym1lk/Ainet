@@ -1,7 +1,7 @@
 @extends('master')
 
-
 @section('title', 'Requests')
+
 @section('content')
 
     <style>
@@ -21,94 +21,65 @@
             padding: 8px;
         }
 
-        .dropdown-content a:hover {
-            background-color: #74787E;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .dropdown:hover .dropbtn {
-            background-color: #74787E;
-            color: white;
-        }
-
-        .dropbtn {
-            background-color: #2F3131;
-            color: white;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .dropdown {
-            position: absolute;
-            display: inline-block;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #2F3133;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-        }
-
-        .dropdown-content a {
-            background-color: #2F3133;
-            color: white;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-        }
-
-        li a, .dropbtn {
-            display: inline-block;
-            color: white;
-            padding: 14px 16px;
-            text-decoration: none;
-        }
-
-        .active {
-            background-color: #d43f3a;
-            position: relative;
-            display: inline-block;
-        }
     </style>
 
     <ul>
-        <div name="left" style="width: 50%">
-            <div>
-                <li class="dropdown">
-                    <a style="background-color: #d43f3a" href="{{route('requests')}}"
-                       class="dropbtn"><strong>Requests</strong></a>
-                    <div class="dropdown-content">
-                        <a style="background-color: #d43f3a" href="/requests/my">My Requests</a>
-                    </div>
-                </li>
-            </div>
-
-            <div style="margin-left: 10%">
-                @if(\Illuminate\Support\Facades\Auth::user()->admin==0)
-                    <li><a href="{{route('requests.make')}}">Make Request</a></li>
-                @endif
-                @if(\Illuminate\Support\Facades\Auth::user()->admin==1)
-                    <li><a href="{{route('admin.users')}}">Users</a></li>
-                @endif
-            </div>
-        </div>
-        <div name="right" style="width: 50%; margin-left: 91.6%">
-            <li style="float: right; " class="dropdown">
-                <a href="/user/profile/{{Auth::user()->profile_url}}" style="padding: 14px 15px;"
-                   class="dropbtn"><strong>{{Auth::user()->name}}</strong></a>
-                <div class="dropdown-content" style="background-color: #74787E">
-                    <a href="/user/logout">Logout</a>
-                </div>
-            </li>
-        </div>
+        <li><a href="{{route('requests')}}" class="active"><strong>Requests</strong></a></li>
+        <li><a href="{{route('requests.make')}}">Make Request</a></li>
+        @if(\Illuminate\Support\Facades\Auth::user()->admin==1)
+            <li><a href="{{route('admin.manage')}}">Manage</a></li>
+        @endif
+        <li style="float: right"><a href="{{route('logout')}}">Logout</a></li>
     </ul>
+
+    {{--
+    <div style="
+            float: right;
+            width: 20%;
+            font-size: 20px;">
+        <b>Ordenação:</b> <select>
+            <option>Crescente</option>
+            <option>Decrescente</option>
+        </select>
+    </div>
+    --}}
+
+    {{--
+    <div style="
+            float:left;
+            //border: 2px solid #000000;
+            //border-radius: 5px;
+            margin: 25px;
+            overflow:auto;
+            height: 400px;
+            width: 20%;">
+        <table style="font-size: 20px;" id="tabelaFiltros" class="table table-striped">
+            <thead>
+            <th>Filtros:</th>
+            <th>Selecione</th>
+            </thead>
+            <tbody>
+            <form action="">
+                <tr>
+                    <td>Pendente</td>
+                    <td><input type="checkbox" name="concluido" value="pendente"></td>
+                </tr>
+                <tr>
+                    <td>Concluido</td>
+                    <td><input type="checkbox" name="pendente" value="concluido"></td>
+                </tr>
+                @for ($i=0;$i<10;$i++)
+                    <tr>
+                        <td>teste</td>
+                        <td><input type="checkbox" name="pendente" value=""></td>
+                    </tr>
+                @endfor
+            </form>
+            </tbody>
+        </table>
+    </div>
+    --}}
+
 
     <form action="{{route('requests.filter')}}" method="get" class="form-group" style="">
         <div style="margin-top: 1%; margin-bottom: 5%">
@@ -137,14 +108,17 @@
                            name="department"/>
                 </div>
 
-                <button style="margin-bottom: 5%;" type="submit" class="btn btn-primary" name="filterBtn">Filter
-                </button>
+                <button type="submit" class="btn btn-primary" name="filterBtn">Filter</button>
+
             </div>
+
             <div class="pedidos" style="
             width: 70%;
             margin-right: 5%;
             overflow:auto;
             float: right">
+
+
                 <div class="form-group">
                     <label for="column">Column</label>
                     <select name="column" class="form-control">
@@ -155,6 +129,7 @@
                         <option value="requests.open_date">Request Date</option>
                     </select>
                 </div>
+
                 <div class="form-group">
                     <label for="order">Order</label>
                     <select name="order" class="form-control">
@@ -163,6 +138,7 @@
                         <option value="desc">Descending</option>
                     </select>
                 </div>
+
                 <button type="submit" class="btn btn-primary" name="orderBtn">Order</button>
 
                 <table id="tabelaPedidos" class="table table-striped">
@@ -194,9 +170,13 @@
                     --}}
                     @foreach($requests as $request)
                         <tr>
-                            <td><img src="https://i1.sndcdn.com/avatars-000198033687-20g02p-t500x500.jpg"
-                                     height="20px"
-                                     width="20px" alt=""></td>
+                            @if(\App\RequestModel::isImage($request->file))
+                                <td><img src="{{base_path() . 'storage/files/' . $request->file}}"
+                                         height="20px"
+                                         width="20px" alt=""></td>
+                            @else
+                                <td></td>
+                            @endif
                             <td>{{$request->dep}}</td>
                             <td>{{$request->name}}</td>
                             <td>{{$request->data}}</td>
@@ -208,6 +188,7 @@
 
                 </table>
                 {{$requests->links()}}
+
                 {{--
                 <div class="pagination">
                     <a href="#">&laquo;</a>
