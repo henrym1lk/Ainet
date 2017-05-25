@@ -144,6 +144,19 @@ class RequestsController extends Controller
 
         return redirect()->route('requests.details', $id);
     }
+    public function myRequests()
+    {
+        $requests = DB::table('requests')
+            ->join('users', 'requests.owner_id', '=', 'users.id')
+            ->join('departaments', 'users.department_id', '=', 'departaments.id')
+            ->select('requests.id as id', 'departaments.name as dep', 'users.name as name', 'requests.open_date as data', 'requests.status as state')
+            ->whereNull('requests.refused_reason')
+            ->orderBy('requests.id')
+            ->where('owner_id', Auth::user()->id)->paginate(10);
+
+
+        return view('requests.requests', compact('requests'));
+    }
 
     public function commentReport()
     {
@@ -167,7 +180,7 @@ class RequestsController extends Controller
     {
         $this->validate($data, [
             'due_date' => 'nullable|date',
-            'quantity' => 'required',
+            'quantity' => 'required|integer|min:1',
             'file' => 'nullable|file'
         ]);
         $request = new RequestModel();

@@ -27,6 +27,7 @@ Route::get('/user/profile/{profile_url}', 'ProfileController@profileDescription'
 //requests
 Route::get('/requests', 'RequestsController@requests')->name('requests');
 Route::get('/requests/filter', 'RequestsController@requestsFilter')->name('requests.filter');
+Route::get('/requests/my', 'RequestsController@myRequests')->name('requests.my');
 Route::get('/requests/details/{detail_id}', 'RequestsController@requestsDetails')->name('requests.details');
 Route::post('/requests/details/{detail_id}/comment', 'RequestsController@requestsComment')->name('requests.comment');
 Route::get('/comment/report', 'RequestsController@commentReport')->name('comment.report');
@@ -66,7 +67,4 @@ Route::get('/user/recover', 'Auth\RegisterController@recover')->name('user.recov
 Route::post('/user/recover/submit', 'Auth\RegisterController@recoverSubmit')->name('user.recover.submit');
 Route::get('/user/recover/{confirmation}', 'Auth\RegisterController@recoverConfirm')->name('user.recover.confirm');
 
-/*
-Route::post('/test', 'Auth\RegisterController@test')->name('test');
-Route::get('/testrender', 'Auth\RegisterController@testRender')->name('testrender');
-*/
+

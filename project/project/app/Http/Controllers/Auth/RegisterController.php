@@ -7,6 +7,7 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -70,7 +71,6 @@ class RegisterController extends Controller
             'presentation' => 'nullable'
         ]);
 
-
         $user = new User();
         $user->fill($data->all());
         $user->password = Hash::make($data['password']);
@@ -78,7 +78,7 @@ class RegisterController extends Controller
         $user['blocked'] = 1;
         $user['print_evals'] = 0;
         $user['print_counts'] = 0;
-        $user['department_id'] = 2;
+        $user['department_id'] = 1;
 
         if (is_null($data['profile_url'])) {
 
@@ -97,12 +97,12 @@ class RegisterController extends Controller
         if ($data->hasFile('photo')) {
             $file = $data->file('photo');
 
-            $fileName = $user['profile_url'].".".$file->getClientOriginalExtension();
+            $fileName = $user['profile_url'] . "." . $file->getClientOriginalExtension();
 
-            $path = public_path('profile_pictures/'.$fileName);
+            $path = public_path('profile_pictures/' . $fileName);
             Image::make($file->getRealPath())->resize(288, 288)->save($path);
 
-            $user['profile_photo'] = "http://project.ainet/profile_pictures/".$fileName;
+            $user['profile_photo'] = "http://project.ainet/profile_pictures/" . $fileName;
         }
 
         $confirmation['confirmation'] = str_random(32);
@@ -115,10 +115,14 @@ class RegisterController extends Controller
 
         $user['confirmation'] = $confirmation['confirmation'];
 
-        Mail::to($user)->send(new Confirmation);
-
+        Mail::send(
+            'mail.verify',
+            array('confirm'=> $confirmation['confirmation']),
+            function ($message) {
+                $message->to(Input::get('email'), Input::get('name'))
+                    ->subject('Verify your email address');
+            });
         $user->save();
-
         return redirect()->route('index');
     }
 
@@ -169,6 +173,7 @@ class RegisterController extends Controller
 
         return redirect()->route('index');
     }
+
     public function recoverConfirm($confirmation)
     {
         $reset = DB::table('password_resets')
@@ -186,7 +191,8 @@ class RegisterController extends Controller
         return view('home.index');
     }
 
-    public function testRender(){
+    public function testRender()
+    {
         return view('test');
     }
 

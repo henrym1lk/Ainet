@@ -12,7 +12,6 @@ class AdminController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-
         if(Auth::user()['admin']==0){
             redirect()->route('requests');
         }
@@ -28,12 +27,12 @@ class AdminController extends Controller
 
         $adminOrNotUsers = DB::table('users')
             ->join('departaments', 'users.department_id', '=', 'departaments.id')
-            ->select('users.id as id', 'departaments.name as dep', 'users.name as name', 'users.admin as admin', 'users.blocked as blocked' )
-            ->get();
-
+            ->select('users.id as id', 'departaments.name as dep', 'users.name as name','users.email as email', 'users.admin as admin', 'users.blocked as blocked' )
+            ->paginate(10);
         return view('admin.users', compact('blockedUsers', 'adminOrNotUsers'));
     }
     public function usersFilter(){
+
         if (is_null(Input::get('column')) || is_null(Input::get('order'))) {
             $users = DB::table('users')
                 ->join('departaments', 'users.department_id', '=', 'departaments.id')
